@@ -62,24 +62,31 @@ public class ControlesPlayer : MonoBehaviour
     {
         if (!puedeSaltar) return;
 
-
-        if(grounded && Input.GetKeyDown(botonSalto))
+        // Si está en el suelo y presiona el botón de salto
+        if (grounded && Input.GetKeyDown(botonSalto))
         {
-            rb2d.velocity = new Vector2(rb2d.velocity.x,  datosSalto.velocidadSalto);
+            // Realiza un salto normal
+            rb2d.velocity = new Vector2(rb2d.velocity.x, datosSalto.velocidadSalto);
+            SoundFXManager.instance.ReproducirSFX(sonidoSalto);
+            StartCoroutine(CheckAterrizaje());
+            saltando = true;
+        }
+        // Si está sobre un enemigo y presiona el botón de salto
+        else if (Physics2D.Raycast(transform.position, Vector2.down, 0.1f, LayerMask.GetMask("Enemy")) && Input.GetKeyDown(botonSalto))
+        {
+            // Realiza un salto normal
+            rb2d.velocity = new Vector2(rb2d.velocity.x, datosSalto.velocidadSalto);
             SoundFXManager.instance.ReproducirSFX(sonidoSalto);
             StartCoroutine(CheckAterrizaje());
             saltando = true;
         }
 
-
         if (rb2d.velocity.y < 0)
-            rb2d.velocity += new Vector2(0,  gravedad * (datosSalto.multiplicadorCaida - 1) * Time.deltaTime);
+            rb2d.velocity += new Vector2(0, gravedad * (datosSalto.multiplicadorCaida - 1) * Time.deltaTime);
         else if (rb2d.velocity.y > 0 && !Input.GetKey(botonSalto))
             rb2d.velocity += new Vector2(0, gravedad * (datosSalto.multiplicadorSaltoBajo - 1) * Time.deltaTime);
-
-
-
     }
+
 
     void Disparar()
     {
